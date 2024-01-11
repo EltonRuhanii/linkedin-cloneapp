@@ -21,6 +21,9 @@ class ProfileViewController: UIViewController {
     var subtitleSize: CGFloat = 12
     var aboutDescription = "I just finished High School at SHMLEJ “Hoxhë Kadri Prishtina” in Pristina. I’ve finished an intensive course for iOS Development at “United Pixels”, also I’ve finished another training for iOS Development held in “RIT Kosovo”. Currently appart of Kin+Carta as a iOS Developer Intern in Prishtina"
     var userFollowers = 333
+    var postOneText: String = {
+        "I'm currently working on creating Wonder Western Balkan app. It will be your ultimate companion for exploring the breathtaking beauty of the Balkan region. Discover hidden gems, historical landmarks, and vibrant cultures with our curated tours. Please note that the app is still under development, utilizing Swift's UIKit for a seamless user experience, and featuring a responsive background to adapt to your device's screen size and color theme. Get ready for an unforgettable adventure!"
+    }()
     
     let smallSpace: CGFloat = 12
     let bigSpace: CGFloat = 24
@@ -38,6 +41,10 @@ class ProfileViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
+    }
+    
+    @objc func openTo() {
+        print("\(username) is open to work")
     }
 
 }
@@ -148,6 +155,7 @@ extension ProfileViewController {
         openToButton.setTitle("Open to", for: .normal)
         openToButton.titleLabel?.font = UIFont.boldSystemFont(ofSize: subtitleSize)
         openToButton.backgroundColor = UIColor(cgColor: CGColor(red: 0.04, green: 0.4, blue: 0.76, alpha: 1))
+        openToButton.addTarget(self, action: #selector(openTo), for: .touchUpInside)
         openToButton.setTitleColor(.white, for: .normal)
         openToButton.layer.cornerRadius = 15
         
@@ -460,11 +468,15 @@ extension ProfileViewController {
         aboutTitle.text = "About"
         aboutTitle.font = UIFont.boldSystemFont(ofSize: 16)
         
-        let bioLabel = UILabel()
-        bioLabel.translatesAutoresizingMaskIntoConstraints = false
-        bioLabel.text = aboutDescription
-        bioLabel.numberOfLines = 4
-        bioLabel.font = UIFont.systemFont(ofSize: subtitleSize)
+        let bioLabel: UILabel = {
+            let label = UILabel()
+            label.translatesAutoresizingMaskIntoConstraints = false
+            label.text = aboutDescription
+            label.numberOfLines = 4
+            label.font = UIFont.systemFont(ofSize: subtitleSize)
+            
+            return label
+        }()
         
         contentView.addSubview(aboutSection)
         aboutSection.addSubview(aboutTitle)
@@ -506,7 +518,8 @@ extension ProfileViewController {
                 button.layer.cornerRadius = 15
                 button.translatesAutoresizingMaskIntoConstraints = false
                 button.setTitle("Create a post", for: .normal)
-                button.titleLabel?.font = UIFont.systemFont(ofSize: titleSize)
+                button.setTitleColor(UIColor(cgColor: CGColor(red: 0.04, green: 0.4, blue: 0.76, alpha: 1)), for: .normal)
+                button.titleLabel?.font = UIFont.systemFont(ofSize: subtitleSize)
                 button.layer.borderColor = CGColor(red: 0.04, green: 0.4, blue: 0.76, alpha: 1)
                 button.layer.borderWidth = 1
                 button.backgroundColor = .white
@@ -553,8 +566,9 @@ extension ProfileViewController {
             let postText: UILabel = {
                 let postText = UILabel()
                 postText.translatesAutoresizingMaskIntoConstraints = false
-                postText.text = "Post text goes here"
-                postText.font = UIFont.systemFont(ofSize: titleSize)
+                postText.numberOfLines = 3
+                postText.text = postOneText
+                postText.font = UIFont.systemFont(ofSize: subtitleSize)
                 
                 return postText
             }()
@@ -563,11 +577,11 @@ extension ProfileViewController {
                 let likeCount = UILabel()
                 likeCount.translatesAutoresizingMaskIntoConstraints = false
                 likeCount.text = "123 Likes"
+                likeCount.font = UIFont.systemFont(ofSize: subtitleSize)
                 return likeCount
             }()
             
-            [title, createPost, followersCount, postOne].forEach { section.addSubview($0) }
-            [postImage, postedBy, postText].forEach { postOne.addSubview($0) }
+            [title, createPost, followersCount, postOne, postImage, postedBy, postText, likeCountLabel].forEach { section.addSubview($0) }
             
             NSLayoutConstraint.activate([
                 title.topAnchor.constraint(equalTo: section.topAnchor, constant: smallSpace),
@@ -582,25 +596,26 @@ extension ProfileViewController {
                 followersCount.topAnchor.constraint(equalTo: title.bottomAnchor, constant: 5),
                 followersCount.leadingAnchor.constraint(equalTo: title.leadingAnchor),
                 
-                postOne.topAnchor.constraint(equalTo: followersCount.bottomAnchor, constant: bigSpace),
-                postOne.leadingAnchor.constraint(equalTo: title.leadingAnchor),
-                postOne.trailingAnchor.constraint(equalTo: title.trailingAnchor),
-                postOne.heightAnchor.constraint(equalToConstant: 100),
+                postedBy.topAnchor.constraint(equalTo: followersCount.bottomAnchor, constant: bigSpace),
+                postedBy.leadingAnchor.constraint(equalTo: followersCount.leadingAnchor),
+                postedBy.trailingAnchor.constraint(equalTo: createPost.trailingAnchor),
                 
-                postedBy.topAnchor.constraint(equalTo: postOne.topAnchor, constant: smallSpace),
-                postedBy.leadingAnchor.constraint(equalTo: postOne.leadingAnchor),
-                postedBy.trailingAnchor.constraint(equalTo: postOne.trailingAnchor, constant: smallSpace),
-
-                postImage.topAnchor.constraint(equalTo: postedBy.bottomAnchor, constant: smallSpace),
-                postImage.leadingAnchor.constraint(equalTo: postOne.leadingAnchor),
-                postImage.bottomAnchor.constraint(equalTo: postOne.bottomAnchor, constant: -smallSpace),
+                postImage.heightAnchor.constraint(equalToConstant: 60),
                 postImage.widthAnchor.constraint(equalTo: postImage.heightAnchor),
+                postImage.topAnchor.constraint(equalTo: postedBy.bottomAnchor, constant: smallSpace),
+                postImage.leadingAnchor.constraint(equalTo: postedBy.leadingAnchor),
                 
-                postText.topAnchor.constraint(equalTo: postImage.topAnchor),
                 postText.leadingAnchor.constraint(equalTo: postImage.trailingAnchor, constant: smallSpace),
-                postText.trailingAnchor.constraint(equalTo: postOne.trailingAnchor, constant: -smallSpace),
+                postText.trailingAnchor.constraint(equalTo: postedBy.trailingAnchor),
+                postText.topAnchor.constraint(equalTo: postImage.topAnchor),
+                postText.bottomAnchor.constraint(equalTo: postImage.bottomAnchor),
                 
-                section.bottomAnchor.constraint(equalTo: postOne.bottomAnchor, constant: smallSpace),
+                likeCountLabel.topAnchor.constraint(equalTo: postImage.bottomAnchor, constant: smallSpace),
+                likeCountLabel.leadingAnchor.constraint(equalTo: postImage.leadingAnchor),
+                likeCountLabel.trailingAnchor.constraint(equalTo: postedBy.trailingAnchor),
+                
+                section.bottomAnchor.constraint(equalTo: likeCountLabel.bottomAnchor, constant: bigSpace),
+                
                 
             ])
             
@@ -620,6 +635,8 @@ extension ProfileViewController {
         
         
     }
+    
+    
 }
 
 #Preview {
